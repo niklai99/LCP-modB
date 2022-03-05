@@ -47,8 +47,7 @@ def adam(grad, init, n_epochs=5000, eta=10**-4, gamma=0.9, beta=0.99,epsilon=10*
         param_traj[j,]=params
         if TIME_FLAG: times.append(time.process_time()-start)
 
-    if TIME_FLAG: return param_traj, np.array(times)
-    else: return param_traj
+    return (param_traj, np.array(times)) if TIME_FLAG else param_traj
 
 ## ADAMAX ALGORITHM
 
@@ -88,5 +87,4 @@ def adamax(grad, init, n_epochs=5000, alpha=2e-3, beta1=0.9, beta2=0.999, noise_
         param_traj[j,]=params
         if TIME_FLAG: times.append(time.process_time()-start)
 
-    if TIME_FLAG: return param_traj, np.array(times)
-    else: return param_traj
+    return (param_traj, np.array(times)) if TIME_FLAG else param_traj
