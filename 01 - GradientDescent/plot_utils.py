@@ -131,14 +131,16 @@ def overlay_trajectory_3d(
     ax, 
     surface, 
     trajectory, 
-    label, 
+    label="", 
     color="black", 
     lw=2,
     ms=18,
     show_i = True,
     show_f = True,
     color_i = "b",
-    color_f = "r"
+    color_f = "r",
+    label_i = "initial point",
+    label_f = "convergence point"
     ):
     
     xs = trajectory[:,0]
@@ -146,38 +148,40 @@ def overlay_trajectory_3d(
     zs = surface(xs,ys)
     ax.plot(xs, ys, zs, color, lw=lw, label=label, zorder=10)
     if show_i:
-        ax.plot(xs[0],  ys[0],  zs[0],  color=color_i, marker="*", markersize=ms, markeredgecolor="k", zorder=11)
+        ax.plot(xs[0],  ys[0],  zs[0],  color=color_i, lw=0, marker="*", markersize=ms, markeredgecolor="k", zorder=11, label=label_i)
     if show_f:
-        ax.plot(xs[-1], ys[-1], zs[-1], color=color_f, marker="*", markersize=ms, markeredgecolor="k", zorder=11)
+        ax.plot(xs[-1], ys[-1], zs[-1], color=color_f, lw=0, marker="*", markersize=ms, markeredgecolor="k", zorder=11, label=label_f)
     return ax
 
 def overlay_trajectory_2d(
     ax, 
     trajectory, 
-    label, 
+    label="", 
     color="k", 
     lw=2, 
     ms=18,
     show_i = True,
     show_f = True,
     color_i = "b",
-    color_f = "r"
+    color_f = "r",
+    label_i = "initial point",
+    label_f = "convergence point"
 ):
 
     xs=trajectory[:,0]
     ys=trajectory[:,1]
     ax.plot(xs, ys, color, lw=lw, label=label, zorder=10)
     if show_i:
-        ax.plot(xs[0],  ys[0],  color=color_i, marker="*", markersize=ms, markeredgecolor="k", zorder=11)
+        ax.plot(xs[0],  ys[0],  color=color_i, lw=0, marker="*", markersize=ms, markeredgecolor="k", zorder=11, label=label_i)
     if show_f:
-        ax.plot(xs[-1], ys[-1], color=color_f, marker="*", markersize=ms, markeredgecolor="k", zorder=11)
+        ax.plot(xs[-1], ys[-1], color=color_f, lw=0, marker="*", markersize=ms, markeredgecolor="k", zorder=11, label=label_f)
 
     return ax
 
 
 # PLOT LOSS 
 
-def plot_loss(loss, n_epochs, fig, subplot_id=111, n_rows=None, n_cols=None, sub_id=None, title = "plot", color="tab:blue"):
+def plot_loss(loss, n_epochs, fig, subplot_id=111, n_rows=None, n_cols=None, sub_id=None, title = "plot", color="tab:blue", lw=3):
 
 
     if subplot_id is None:
@@ -186,9 +190,20 @@ def plot_loss(loss, n_epochs, fig, subplot_id=111, n_rows=None, n_cols=None, sub
         ax = fig.add_subplot(subplot_id)
     
     t_grid = np.arange(0, n_epochs+1, 1)
-    ax.plot(t_grid, loss, color=color)
+
+    ax.plot(
+        t_grid, loss, 
+        color = color,
+        lw    = lw
+    )
+
     ax.set_yscale("log")
 
-    ax.set_title(title)
+    ax.set_title(title, fontsize=18)
+    ax.set_xlabel("epochs", fontsize=18)
+    ax.set_ylabel("loss", fontsize=18)
+
+    ax.tick_params(axis="both", which="major", labelsize=18, length=5)
+    ax.minorticks_off()
 
     return ax
