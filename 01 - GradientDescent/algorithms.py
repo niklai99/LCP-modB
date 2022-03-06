@@ -50,6 +50,7 @@ def adam(grad, init, n_epochs=5000, eta=10**-4, gamma=0.9, beta=0.99,epsilon=10*
     if TIME_FLAG: return param_traj, np.array(times)
     else: return param_traj
 
+
 ## ADAMAX ALGORITHM
 
 def adamax(grad, init, n_epochs=5000, alpha=2e-3, beta1=0.9, beta2=0.999, noise_strength=0, TIME_FLAG=False):
@@ -90,3 +91,67 @@ def adamax(grad, init, n_epochs=5000, alpha=2e-3, beta1=0.9, beta2=0.999, noise_
 
     if TIME_FLAG: return param_traj, np.array(times)
     else: return param_traj
+
+
+## VANILLA GRADIENT DESCENT
+
+def gd(grad, init, n_epochs=1000, eta=10**-4, noise_strength=0):
+    #This is a simple optimizer
+    params=np.array(init)
+    param_traj=np.zeros([n_epochs+1,2])
+    param_traj[0,]=init
+    v=0;
+    for j in range(n_epochs):
+        noise=noise_strength*np.random.randn(params.size)
+        v=eta*(np.array(grad(params))+noise)
+        params=params-v
+        param_traj[j+1,]=params
+    return param_traj
+
+
+## GRADIENT DESCENT WITH MOMENTUM
+
+def gd_with_mom(grad, init, n_epochs=5000, eta=10**-4, gamma=0.9,noise_strength=0):
+    params=np.array(init)
+    param_traj=np.zeros([n_epochs+1,2])
+    param_traj[0,]=init
+    v=0
+    for j in range(n_epochs):
+        noise=noise_strength*np.random.randn(params.size)
+        v=gamma*v+eta*(np.array(grad(params))+noise)
+        params=params-v
+        param_traj[j+1,]=params
+    return param_traj
+
+
+## NESTEROV
+
+def NAG(grad, init, n_epochs=5000, eta=10**-4, gamma=0.9,noise_strength=0):
+    params=np.array(init)
+    param_traj=np.zeros([n_epochs+1,2])
+    param_traj[0,]=init
+    v=0
+    for j in range(n_epochs):
+        noise=noise_strength*np.random.randn(params.size)
+        params_nesterov=params-gamma*v
+        v=gamma*v+eta*(np.array(grad(params_nesterov))+noise)
+        params=params-v
+        param_traj[j+1,]=params
+    return param_traj
+
+
+# RMSPROP
+
+def rms_prop(grad, init, n_epochs=5000, eta=10**-3, beta=0.9,epsilon=10**-8,noise_strength=0):
+    params=np.array(init)
+    param_traj=np.zeros([n_epochs+1,2])
+    param_traj[0,]=init#Import relevant packages
+    grad_sq=0;
+    for j in range(n_epochs):
+        noise=noise_strength*np.random.randn(params.size)
+        g=np.array(grad(params))+noise
+        grad_sq=beta*grad_sq+(1-beta)*g*g
+        v=eta*np.divide(g,np.sqrt(grad_sq+epsilon))
+        params= params-v
+        param_traj[j+1,]=params
+    return param_traj

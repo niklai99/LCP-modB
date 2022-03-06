@@ -181,20 +181,38 @@ def overlay_trajectory_2d(
 
 # PLOT LOSS 
 
-def plot_loss(loss, n_epochs, fig, subplot_id=111, n_rows=None, n_cols=None, sub_id=None, title = "plot", color="tab:blue", lw=3):
+def plot_loss(
+    loss, 
+    n_epochs, 
+    fig, 
+    axes=None, 
+    subplot_id=111, 
+    n_rows=None, 
+    n_cols=None, 
+    sub_id=None, 
+    title = "plot", 
+    color="tab:blue", 
+    lw=3,
+    label=None,
+    ):
 
 
     if subplot_id is None:
         ax = fig.add_subplot(n_rows, n_cols, sub_id)
+    elif axes is not None:
+        ax = axes
     else:
         ax = fig.add_subplot(subplot_id)
+    
+    
     
     t_grid = np.arange(0, n_epochs+1, 1)
 
     ax.plot(
         t_grid, loss, 
         color = color,
-        lw    = lw
+        lw    = lw,
+        label = label
     )
 
     ax.set_yscale("log")
