@@ -183,8 +183,8 @@ def overlay_trajectory_2d(
 
 def plot_loss(
     loss, 
-    n_epochs, 
     fig, 
+    n_epochs=None,
     axes=None, 
     subplot_id=111, 
     n_rows=None, 
@@ -194,6 +194,8 @@ def plot_loss(
     color="tab:blue", 
     lw=3,
     label=None,
+    TIME_FLAG=0,
+    times=None
     ):
 
 
@@ -205,8 +207,13 @@ def plot_loss(
         ax = fig.add_subplot(subplot_id)
     
     
+    if TIME_FLAG:
+        t_grid = times
+        xlabel = "time (s)"
+    else:
+        t_grid = np.arange(0, n_epochs+1, 1)
+        xlabel = "epochs"
     
-    t_grid = np.arange(0, n_epochs+1, 1)
 
     ax.plot(
         t_grid, loss, 
@@ -218,7 +225,7 @@ def plot_loss(
     ax.set_yscale("log")
 
     ax.set_title(title, fontsize=18)
-    ax.set_xlabel("epochs", fontsize=18)
+    ax.set_xlabel(xlabel, fontsize=18)
     ax.set_ylabel("loss", fontsize=18)
 
     ax.tick_params(axis="both", which="major", labelsize=18, length=5)

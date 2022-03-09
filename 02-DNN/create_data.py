@@ -7,29 +7,51 @@ def sample_data(N=3000, B=100):
     return x
 
 
-def labeling_function(x,c=1):
-    r=0
+def labeling_function(x, c=1):
     if c==1:
-        if x[0]>-20 and x[1]>-40 and x[0]+x[1] < 40:
-            r=1
-    if c==2:
-        if (np.sign(x.sum())*np.sign(x[0]))*np.cos(np.linalg.norm(x)/(2*np.pi))>0:
-            r=1
-    return r
+        return ((x[:,0]>-20) & (x[:,1]>-40) & (x[:,0]+x[:,1] < 40)).astype(int)
+    elif c==2:
+        return ((np.sign(x.sum(axis=1))*np.sign(x[:,0]))
+                *np.cos(np.linalg.norm(x, axis=1)/(2*np.pi))>0).astype(int)
+
 
 def assign_label(x):
-    N = x.shape[0]
-    y = np.zeros(N)
-    for i in range(N):
-        y[i] = labeling_function(x[i], c=1)
+    y = labeling_function(x, c=1)
     return y
 
 
+def create_data(N=4000, B=100, c='triang'):
+    if c=='triang':
+        x = (np.random.random((N,2))-0.5)*B
+        y = ((x[:,0]>-20) & (x[:,1]>-40) & (x[:,0]+x[:,1] < 40)).astype(int)
+    elif c=='weird':
+        x = (np.random.random((N,2))-0.5)*B
+        y = ((np.sign(x.sum(axis=1))*np.sign(x[:,0]))
+             *np.cos(np.linalg.norm(x, axis=1)/(2*np.pi))>0).astype(int)
+    elif c=='rad':
+        r1, r2 = B/10, B/3
+        choice = np.random.random(N)
+        r = (np.array([r1 if choice[i] < 0.5 else r2 for i in range(N)])
+            + (np.random.random(N)-0.5)*B/5)
+        alpha = 2*np.pi*np.random.random(N)
+        x = np.empty((N,2))
+        x[:,0] = np.cos(alpha)*r
+        x[:,1] = np.sin(alpha)*r
+        y = (choice < 0.5).astype(int)
+    return (x, y)
 
 
+def create_grid(B, dx):
 
+    xgrid = np.arange(-0.5*B,0.5*B+dx, dx)
+    l_grid = xgrid.shape[0]
+    grid = np.zeros((l_grid*l_grid, 2))
 
-
-
-
+    k=0
+    for i in range(l_grid):
+        for j in range(l_grid):
+            grid[k,:] = (xgrid[j], xgrid[i])
+            k=k+1
+            
+    return grid
 
