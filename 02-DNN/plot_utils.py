@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-
+from matplotlib.ticker import MaxNLocator
 
 def flatten(t):
     return [item for sublist in t for item in sublist]
@@ -132,7 +132,13 @@ def plot_weights(
     fontsize = 18,
 ):
 
-    fig, ax = plt.subplots(nrows = int(len(weights)/2), ncols = 2, figsize=figsize, constrained_layout=True)
+    fig, ax = plt.subplots(
+        nrows              = int(len(weights)/2), 
+        ncols              = 2, 
+        figsize            = figsize, 
+        constrained_layout = True,
+        sharex             = "col"
+    )
 
     w_list = []
     b_list = []
@@ -146,16 +152,66 @@ def plot_weights(
     for i, (w, b) in enumerate(zip(w_list, b_list)):
 
         ax[i][0].set_title("weights", fontsize=fontsize+4)
-        ax[i][0].set_xlabel("w", fontsize=fontsize)
+        ax[i][0].set_xlabel("w",      fontsize=fontsize)
         ax[i][0].set_ylabel("counts", fontsize=fontsize)
         ax[i][0].tick_params(axis="both", which="major", labelsize=fontsize, length=5)
+        ax[i][0].yaxis.set_major_locator(MaxNLocator(integer=True))
+        ax[i][0].xaxis.set_tick_params(labelbottom=True)
 
-        ax[i][0].hist(flatten(w))
+        
+        ax[i][0].hist(
+            flatten(w),
+            histtype="bar", 
+            linewidth=3,
+            edgecolor="#009cff", 
+            facecolor="#aadeff", 
+            alpha=1, 
+        )
+
 
         ax[i][1].set_title("biases", fontsize=fontsize+4)
-        ax[i][1].set_xlabel("w", fontsize=fontsize)
+        ax[i][1].set_xlabel("b",     fontsize=fontsize)
         ax[i][1].tick_params(axis="both", which="major", labelsize=fontsize, length=5)
+        ax[i][1].yaxis.set_major_locator(MaxNLocator(integer=True))
+        ax[i][1].xaxis.set_tick_params(labelbottom=True)
 
-        ax[i][1].hist(b)
+    
+        ax[i][1].hist(
+            b,
+            histtype="bar", 
+            linewidth=3,
+            edgecolor="#009cff", 
+            facecolor="#aadeff", 
+            alpha=1, 
+        )
 
-    return
+    ax = make_xlim_sym(ax)
+
+    return ax
+
+
+def make_xlim_sym(axes):
+    
+    lw, uw = [], []
+    lb, ub = [], []
+    for ax in axes:
+        lw.append(ax[0].get_xlim()[0])
+        uw.append(ax[0].get_xlim()[1])
+
+        lb.append(ax[1].get_xlim()[0])
+        ub.append(ax[1].get_xlim()[1])
+
+    w_bounds = lw + uw
+    b_bounds = lb + ub
+
+    w_bounds = [abs(x) for x in w_bounds]
+    b_bounds = [abs(x) for x in b_bounds]
+
+    w_bound = max(w_bounds)
+    b_bound = max(b_bounds)
+
+    for ax in axes:
+        ax[0].set_xlim(-w_bound, w_bound)
+        ax[1].set_xlim(-b_bound, b_bound)
+
+    return axes

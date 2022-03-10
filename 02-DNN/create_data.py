@@ -29,7 +29,7 @@ def create_data(N=4000, B=100, c='triang'):
         y = ((np.sign(x.sum(axis=1))*np.sign(x[:,0]))
              *np.cos(np.linalg.norm(x, axis=1)/(2*np.pi))>0).astype(int)
     elif c=='rad':
-        r1, r2 = B/10, B/3
+        r1, r2 = B/10, B/10 +B/5
         choice = np.random.random(N)
         r = (np.array([r1 if choice[i] < 0.5 else r2 for i in range(N)])
             + (np.random.random(N)-0.5)*B/5)
