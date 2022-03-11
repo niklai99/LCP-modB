@@ -127,8 +127,9 @@ def plot_metric(
 
 def plot_weights(
     weights,
-    figsize = (14, 18),
-    color = "tab:blue",
+    figsize  = (14, 18),
+    suptitle = None,
+    color    = "tab:blue",
     fontsize = 18,
 ):
 
@@ -139,7 +140,8 @@ def plot_weights(
         constrained_layout = True,
         sharex             = "col"
     )
-
+    fig.suptitle(suptitle, fontsize=fontsize+8)
+    
     w_list = []
     b_list = []
 
@@ -263,4 +265,39 @@ def plot_gs_results(
     if legend:
         ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=fontsize-4, title="rescaling", title_fontsize=fontsize)
         
+    return ax
+
+
+def plot_confusion_matrix(
+    cm,
+    ax,
+    cmap     = "GnBu_r",
+    labels   = [0, 1],
+    fontsize = 18,
+    title    = None,
+):
+
+    mat = ax.matshow(cm, cmap=cmap)
+
+    threshold = mat.norm(cm.max())/2.
+    textcolors = ["white", "black"]
+    for i in range(len(labels)):
+        for j in range(len(labels)):
+            text = ax.text(
+                j, 
+                i, 
+                f"{cm[i, j]*100:.1f}%", 
+                ha       = "center", 
+                va       = "center", 
+                color    = textcolors[int(mat.norm(cm[i, j]) > threshold)],
+                fontsize = fontsize
+            )
+
+    ax.set_title(title,      fontsize=fontsize+4)
+    ax.set_xlabel("pred labels", fontsize=fontsize)
+    ax.set_ylabel("true labels", fontsize=fontsize)
+
+    ax.xaxis.set_ticks_position('bottom')
+    ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
+    
     return ax
