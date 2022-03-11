@@ -8,7 +8,7 @@ class NN(tf.keras.Model):
         dropout_layers    = None,
         dropout_rates     = None,
         batch_norm_layers = None,
-        initializers      = ["glorot_uniform"],
+        initializer       = "glorot_uniform",
         hidden_activation = "sigmoid",
         output_activation = "sigmoid",
         nn_name           = "my neural network",
@@ -38,7 +38,7 @@ class NN(tf.keras.Model):
         self.input_dim = input_dim
 
         # store weights initializers
-        self.w_init = initializers
+        self.w_init = initializer
 
         # store dropout architecture
         self.dropout_arc   = dropout_layers
@@ -67,29 +67,40 @@ class NN(tf.keras.Model):
         # create the input layer with input_dim neurons
         self.input_layer = tf.keras.layers.Input(shape=self.input_dim, name="input_layer")
 
+        self.hidden_layers = [
+            tf.keras.layers.Dense(
+                architecture[i+1], 
+                input_shape        = (architecture[i],), 
+                activation         = hidden_activation,
+                kernel_initializer = self.w_init,
+                name               = f"hidden_{i}"
+            )
+            for i in range(len(architecture)-2)
+        ]
+
         # create hidden layers following architecture
-        if len(self.w_init) == 1:
-            self.hidden_layers = [
-                tf.keras.layers.Dense(
-                    architecture[i+1], 
-                    input_shape        = (architecture[i],), 
-                    activation         = hidden_activation,
-                    kernel_initializer = self.w_init[0],
-                    name               = f"hidden_{i}"
-                )
-                for i in range(len(architecture)-2)
-            ]
-        elif len(self.w_init) > 1:
-            self.hidden_layers = [
-                tf.keras.layers.Dense(
-                    architecture[i+1], 
-                    input_shape        = (architecture[i],), 
-                    activation         = hidden_activation,
-                    kernel_initializer = self.w_init[i],
-                    name               = f"hidden_{i}"
-                )
-                for i in range(len(architecture)-2)
-            ]
+        #if len(self.w_init) == 1:
+        #    self.hidden_layers = [
+        #        tf.keras.layers.Dense(
+        #            architecture[i+1], 
+        #            input_shape        = (architecture[i],), 
+        #            activation         = hidden_activation,
+        #            kernel_initializer = self.w_init[0],
+        #            name               = f"hidden_{i}"
+        #        )
+        #        for i in range(len(architecture)-2)
+        #    ]
+        #elif len(self.w_init) > 1:
+        #    self.hidden_layers = [
+        #        tf.keras.layers.Dense(
+        #            architecture[i+1], 
+        #            input_shape        = (architecture[i],), 
+        #            activation         = hidden_activation,
+        #            kernel_initializer = self.w_init[i],
+        #            name               = f"hidden_{i}"
+        #        )
+        #        for i in range(len(architecture)-2)
+        #    ]
 
         # create the output layer
         self.output_layer = tf.keras.layers.Dense(
@@ -152,6 +163,7 @@ def create_model(
     batch_norm_layers = None,
     hidden_activation = "relu",
     output_activation = "sigmoid",
+    initializer       = "glorot_uniform",
     loss              = "binary_crossentropy",
     optimizer         = "adam",
     metrics           = ["accuracy"],
@@ -167,6 +179,7 @@ def create_model(
         batch_norm_layers = batch_norm_layers,
         hidden_activation = hidden_activation,
         output_activation = output_activation,
+        initializer       = initializer,
         nn_name           = nn_name,
     )
     # compile the NN model

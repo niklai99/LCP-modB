@@ -215,3 +215,52 @@ def make_xlim_sym(axes):
         ax[1].set_xlim(-b_bound, b_bound)
 
     return axes
+
+
+def plot_gs_results(
+    gs_results,
+    fig,
+    subplot_id = 111,
+    fontsize   = 18,
+    colors     = None,
+    lw         = 0,
+    title      = "weigth initializers grid search results",
+    labels     = None,
+    legend     = True,
+):
+
+    ax = fig.add_subplot(subplot_id)
+
+    ax.set_title(title,           fontsize=fontsize+4)
+    # ax.set_xlabel("initializers", fontsize=fontsize)
+    ax.set_ylabel("accuracy",     fontsize=fontsize)
+    
+    ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
+
+
+    for i, grid_result in enumerate(gs_results):
+        
+        means  = grid_result.cv_results_['mean_test_score']
+        stds   = grid_result.cv_results_['std_test_score']
+        params = grid_result.cv_results_['params']
+
+        ax.errorbar(
+            x          = np.arange(1+0.08*i, len(means)+0.08*i+1, 1),
+            y          = means,
+            yerr       = stds,
+            linestyle  = "none",
+            linewidth  = lw,
+            elinewidth = 1, 
+            capsize    = 2, 
+            marker     = "o",
+            color      = colors[labels[i]][0],
+            label      = labels[i]
+        )
+
+    ax.set_xticks(np.arange(1,len(means)+1))
+    ax.set_xticklabels([p["initializer"] for p in params], ha='right', rotation_mode='anchor', rotation=45)
+
+    if legend:
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=fontsize-4, title="rescaling", title_fontsize=fontsize)
+        
+    return ax

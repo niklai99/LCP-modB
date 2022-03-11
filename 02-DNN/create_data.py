@@ -38,6 +38,19 @@ def create_data(N=4000, B=100, c='triang'):
         x[:,0] = np.cos(alpha)*r
         x[:,1] = np.sin(alpha)*r
         y = (choice < 0.5).astype(int)
+    elif c=='rad3d':
+        r1, r2 = B/10, B/10 +B/5
+        choice = np.random.random(N)
+        r = (np.array([r1 if choice[i] < 0.5 else r2 for i in range(N)])
+            + (np.random.random(N)-0.5)*B/5)
+        alpha = 2*np.pi*np.random.random(N)
+        beta = np.pi*np.random.random(N)
+        x = np.empty((N,3))
+        x[:,0] = np.sin(beta)*np.cos(alpha)*r
+        x[:,1] = np.sin(beta)*np.sin(alpha)*r
+        x[:,2] = np.cos(beta)*r
+        y = (choice < 0.5).astype(int)
+
     return (x, y)
 
 
