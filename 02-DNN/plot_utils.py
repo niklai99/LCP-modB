@@ -229,6 +229,9 @@ def plot_gs_results(
     title      = "weigth initializers grid search results",
     labels     = None,
     legend     = True,
+    key        = "initializer",
+    fill_box   = False,
+    legend_title = "rescaling"
 ):
 
     ax = fig.add_subplot(subplot_id)
@@ -245,6 +248,9 @@ def plot_gs_results(
         means  = grid_result.cv_results_['mean_test_score']
         stds   = grid_result.cv_results_['std_test_score']
         params = grid_result.cv_results_['params']
+ 
+        color = "#009cff" if colors is None else colors[labels[i]][0]
+        label = None      if labels is None else labels[i]
 
         ax.errorbar(
             x          = np.arange(1+0.08*i, len(means)+0.08*i+1, 1),
@@ -255,15 +261,36 @@ def plot_gs_results(
             elinewidth = 1, 
             capsize    = 2, 
             marker     = "o",
-            color      = colors[labels[i]][0],
-            label      = labels[i]
+            color      = color,
+            label      = label
         )
 
+        if fill_box:
+            max_idx = np.argmax(grid_result.cv_results_['mean_test_score'])
+            ax.fill_between(np.arange(1+0.08*i, len(means)+0.08*i+1, 1), 
+                            means[max_idx]+stds[max_idx], 
+                            means[max_idx]-stds[max_idx], 
+                            color="#ff6300", 
+                            alpha=0.3, 
+                            label=f"best {key} error box")
+            ax.axhline(y =means[max_idx], color="#ff6300")
+
     ax.set_xticks(np.arange(1,len(means)+1))
-    ax.set_xticklabels([p["initializer"] for p in params], ha='right', rotation_mode='anchor', rotation=45)
+    if key is None:
+        ax.set_xticklabels([p for p in params], ha='right', rotation_mode='anchor', rotation=45)
+    elif len(key)>1:
+        labels = [str(p[k]) for p in params for k in key ]
+        ax.set_xticklabels([", ".join(labels[i:i+len(key)]) for i in range(0, len(labels), len(key))],
+                            ha='right', 
+                            rotation_mode='anchor', 
+                            rotation=45)
+    else:
+        ax.set_xticklabels([p[key[0]] for p in params], ha='right', rotation_mode='anchor', rotation=45)
 
     if legend:
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=fontsize-4, title="rescaling", title_fontsize=fontsize)
+        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=fontsize-4, title=legend_title, title_fontsize=fontsize)
+
+   
         
     return ax
 
@@ -286,7 +313,7 @@ def plot_confusion_matrix(
             text = ax.text(
                 j, 
                 i, 
-                f"{cm[i, j]*100:.1f}%", 
+                f"{cm[i, j]}",#*100:.1f}%", 
                 ha       = "center", 
                 va       = "center", 
                 color    = textcolors[int(mat.norm(cm[i, j]) > threshold)],
