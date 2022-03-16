@@ -32,8 +32,7 @@ class GridSearch():
         return self.grid_result
 
     # print sorted mean scores
-    def print_result(self):
-        print("Best: %f using %s" % (self.grid_result.best_score_, self.grid_result.best_params_))
+    def print_result(self, automatic_best=True):
         means = self.grid_result.cv_results_['mean_test_score']
         stds = self.grid_result.cv_results_['std_test_score']
         params = np.array(self.grid_result.cv_results_['params'])
@@ -42,6 +41,11 @@ class GridSearch():
         means = means[idx]
         stds  = stds[idx]
         params = params[idx]
+
+        if automatic_best:
+            print("Best: %f using %s" % (self.grid_result.best_score_, self.grid_result.best_params_))
+        else:
+            print("Best: %f using %s" % (means[0], params[0]))
 
         for mean, stdev, param in zip(means, stds, params):
             print("%f (%f) with: %r" % (mean, stdev, param))

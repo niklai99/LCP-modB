@@ -30,8 +30,8 @@ def plot_labeled_data(
     ax = fig.add_subplot(subplot_id)
 
     ax.set_title(title, fontsize=fontsize+4)
-    ax.set_xlabel("x",  fontsize=fontsize)
-    ax.set_ylabel("y",  fontsize=fontsize)
+    ax.set_xlabel("$x_1$",  fontsize=fontsize)
+    ax.set_ylabel("$x_2$",  fontsize=fontsize)
     ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
 
 
@@ -231,7 +231,8 @@ def plot_gs_results(
     legend     = True,
     key        = "initializer",
     fill_box   = False,
-    legend_title = "rescaling"
+    legend_title = "rescaling",
+    max_comb   = None
 ):
 
     ax = fig.add_subplot(subplot_id)
@@ -242,12 +243,26 @@ def plot_gs_results(
     
     ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
 
+    if max_comb is None:
+        max_comb = len(gs_results[0].cv_results_['mean_test_score'])
 
     for i, grid_result in enumerate(gs_results):
-        
+
+        # plot only max_comb parameter combinations
         means  = grid_result.cv_results_['mean_test_score']
-        stds   = grid_result.cv_results_['std_test_score']
-        params = grid_result.cv_results_['params']
+        idx    = np.argsort(means)[::-1]
+        means  = np.array(means)[idx]
+        means  = means[:max_comb]
+        stds   = np.array(grid_result.cv_results_['std_test_score'])[idx]
+        stds   = stds[:max_comb]
+        params = np.array(grid_result.cv_results_['params'])[idx]
+        params = params[:max_comb]
+
+        # shuffle sorted arrays for a more natural visualization
+        idx = np.random.permutation(len(means))
+        means  = means[idx]
+        stds   = stds[idx]
+        params = params[idx]
  
         color = "#009cff" if colors is None else colors[labels[i]][0]
         label = None      if labels is None else labels[i]
@@ -266,7 +281,7 @@ def plot_gs_results(
         )
 
         if fill_box:
-            max_idx = np.argmax(grid_result.cv_results_['mean_test_score'])
+            max_idx = np.argmax(means)
             ax.fill_between(np.arange(1+0.08*i, len(means)+0.08*i+1, 1), 
                             means[max_idx]+stds[max_idx], 
                             means[max_idx]-stds[max_idx], 
