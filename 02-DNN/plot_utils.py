@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from matplotlib.ticker import MaxNLocator
-from matplotlib.colors import Normalize
+from matplotlib.colors import Normalize, Colormap
+from matplotlib.lines  import Line2D
 
 def flatten(t):
     return [item for sublist in t for item in sublist]
@@ -28,8 +29,8 @@ def plot_labeled_data(
 ):
     dim = x.shape[1]
     fig.tight_layout()
-    ax = fig.add_subplot(subplot_id, projection=('3d' if dim==3 else None),
-                         alpha=0.3 if dim==3 else 1)
+    ax = fig.add_subplot(subplot_id, projection='3d' if dim==3 else None,
+                         alpha=0.5 if dim==3 else 1)
 
     ax.set_title(title, fontsize=fontsize+4)
     ax.set_xlabel("$x_1$",  fontsize=fontsize)
@@ -37,6 +38,7 @@ def plot_labeled_data(
     ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
 
     if dim==3:
+        ax.set_zlabel("$x_3$",  fontsize=fontsize)
         ax.scatter3D(
             xs   = x[:,0],
             ys   = x[:,1],
@@ -56,9 +58,18 @@ def plot_labeled_data(
             ax        = ax
         )
 
-    ax.legend([],[], frameon=False)
+    ax.legend([], [], frameon=False)
     if legend:
-        ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), fontsize=fontsize-4, title="label", title_fontsize=fontsize)
+        if dim==3:
+            cmap      = plt.get_cmap(palette)
+            lgn_e     = [Line2D([0], [0], marker='o', lw=0, color=cmap(0.)),
+                     Line2D([0], [0], marker='o', lw=0, color=cmap(hue_norm[1]**-1))] if dim==3 else []
+            lgn_names = ['0', '1'] if dim==3 else []
+            ax.legend(lgn_e, lgn_names, loc="center left", bbox_to_anchor=(1, 0.5), 
+                      fontsize=fontsize-4, title="label", title_fontsize=fontsize)
+        else:
+            ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), 
+                      fontsize=fontsize-4, title="label", title_fontsize=fontsize)
 
     if show_boundaries:
         boundaries(ax)
@@ -71,7 +82,6 @@ def plot_comparison(
     network
 ):
     pred = network.predict(x).reshape((-1,))
-    # if pred-label > 0.5 ==> pred-label==1
     pred_binary = pred.copy()
     pred_binary[pred <= 0.5] = 0
     pred_binary[pred >  0.5] = 1
@@ -79,7 +89,6 @@ def plot_comparison(
     titles = ['original data', 'NN prediction', 'NN hard prediction']
 
     # plots
-    # if x.shape[1] == 2:
     fig = plt.figure(figsize=(15, 5))
     for i in range(3):
         plot_labeled_data(
@@ -87,30 +96,18 @@ def plot_comparison(
             fig, 131 + i,
             titles[i],
             palette  = 'GnBu_r',
-            hue_norm = (0, 2),
-            legend   = (False if i!=2 else True)
+            hue_norm = (0, 1.5),
+            legend   = False if i!=2 else True
         )
-        '''# real data
-        ax[0].scatter(x[:,0], x[:,1], c=y)
-        # NN prediction
-        ax[1].scatter(x[:,0], x[:,1], c=pred)
-        # hard NN prediction
-        ax[2].scatter(x[:,0], x[:,1], c=pred_binary)
-    elif x.shape[1] == 3:
-        fig = plt.figure(figsize=(16,5))
-        ax = (fig.add_subplot(1, 3, 1, projection='3d'),
-              fig.add_subplot(1, 3, 2, projection='3d'),
-              fig.add_subplot(1, 3, 3, projection='3d'))
-        ax[0].scatter3D(x[:,0], x[:,1], x[:,2], c=y, alpha=0.3)
-        ax[1].scatter3D(x[:,0], x[:,1], x[:,2], c=pred, alpha=0.3)
-        ax[2].scatter3D(x[:,0], x[:,1], x[:,2], c=pred_binary, alpha=0.3)
-    else:
-        return
-    
-    ax[0].set_title("real data")
-    ax[1].set_title("NN prediction")
-    ax[2].set_title("hard NN prediction")'''
+
     plt.show()
+
+def history_mode(
+    history
+):
+    hist, bins = np.histogram(np.asarray(history), bins=100)
+    mode_n = hist.argmax()
+    return (bins[mode_n]+bins[mode_n+1])/2
 
 def plot_loss(
     epochs,
@@ -413,6 +410,8 @@ def scatter_results(
     par_label    = None,
     metric_label = None,
     color        = "tab:blue",
+    lw           = 1,
+    ms           = 12,
     fontsize     = 18,
     legend       = True,
     title        = "plot"
@@ -425,15 +424,24 @@ def scatter_results(
     ax.set_ylabel(metric_label, fontsize=fontsize)
     ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
 
-    ax.plot(
-        parameter, 
-        result,
-        marker = "o",
-        markersize = 12,
-        color = color,
-        lw    = 1,
+    sns.scatterplot(
+        x     = parameter, 
+        y     = result,
+        size  = ms,
+        palette = color,
+        #lw    = lw,
         label = label,
+        ax = ax,
     )
+
+    #ax.plot(
+    #    parameter, 
+    #    result,
+    #    # marker = "o",
+    #    color = color,
+    #    lw    = lw,
+    #    #label = label,
+    #)
 
     if legend:
         ax.legend(fontsize=fontsize-4)
