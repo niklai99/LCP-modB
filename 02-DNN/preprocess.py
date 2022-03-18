@@ -7,7 +7,7 @@ def standardize(x, mean, std):
 
 
 def normalize(x):
-    return (x - np.min(x, axis=0)) / np.max(x, axis=0) - np.min(x, axis=0)
+    return (x - np.min(x, axis=0)) / np.abs(np.max(x, axis=0) - np.min(x, axis=0))
 
 
 def augment_data(data, labels, rate):

@@ -283,7 +283,7 @@ def plot_gs_results(
     title      = "weigth initializers grid search results",
     labels     = None,
     legend     = True,
-    key        = "initializer",
+    key        = ["initializer"],
     fill_box   = False,
     legend_title = "rescaling",
     max_comb   = None
@@ -305,19 +305,21 @@ def plot_gs_results(
         # plot only max_comb parameter combinations
         means  = grid_result.cv_results_['mean_test_score']
         idx    = np.argsort(means)[::-1]
-        means  = np.array(means)[idx]
+        #means  = np.array(means)[idx]
         means  = means[:max_comb]
-        stds   = np.array(grid_result.cv_results_['std_test_score'])[idx]
+        stds   = np.array(grid_result.cv_results_['std_test_score'])
+        #stds   = stds[idx]
         stds   = stds[:max_comb]
-        params = np.array(grid_result.cv_results_['params'])[idx]
+        params = np.array(grid_result.cv_results_['params'])
+        #params = params[idx]
         params = params[:max_comb]
-
+        """
         # shuffle sorted arrays for a more natural visualization
         idx = np.random.permutation(len(means))
         means  = means[idx]
         stds   = stds[idx]
         params = params[idx]
- 
+        """
         color = "#009cff" if colors is None else colors[labels[i]][0]
         label = None      if labels is None else labels[i]
 
