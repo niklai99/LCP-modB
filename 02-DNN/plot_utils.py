@@ -411,7 +411,10 @@ def scatter_results(
     metric_label = None,
     color        = "tab:blue",
     lw           = 1,
+    ls           = "-",
     ms           = 12,
+    mnorm       = None,
+    mstyle       = "o",
     fontsize     = 18,
     legend       = True,
     title        = "plot"
@@ -425,23 +428,27 @@ def scatter_results(
     ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
 
     sns.scatterplot(
-        x     = parameter, 
-        y     = result,
-        size  = ms,
-        palette = color,
-        #lw    = lw,
-        label = label,
-        ax = ax,
+        x         = parameter, 
+        y         = result,
+        size      = np.array(ms),
+        sizes     = (100, 500),
+        size_norm = mnorm,
+        marker    = mstyle,
+        palette   = color,
+        color     = color,
+        label     = label,
+        ax        = ax,
+        legend    = False
     )
 
-    #ax.plot(
-    #    parameter, 
-    #    result,
-    #    # marker = "o",
-    #    color = color,
-    #    lw    = lw,
-    #    #label = label,
-    #)
+    ax.plot(
+        parameter, 
+        result,
+        color = color,
+        ls    = ls,
+        lw    = lw,
+        zorder = 0
+    )
 
     if legend:
         ax.legend(fontsize=fontsize-4)
