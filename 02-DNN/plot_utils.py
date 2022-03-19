@@ -26,7 +26,7 @@ def plot_labeled_data(
     hue_norm        = (0, 1),
     legend          = True,
     show_boundaries = False,
-    show_ylbl       = False,
+    show_ylbl       = True,
     return_lgn      = False
 ):
     dim = x.shape[1]
@@ -36,7 +36,7 @@ def plot_labeled_data(
 
     ax.set_title(title, fontsize=fontsize+4)
     ax.set_xlabel("$x_1$",  fontsize=fontsize)
-    if show_lbly:
+    if show_ylbl:
         ax.set_ylabel("$x_2$",  fontsize=fontsize)
         ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
     else:
@@ -95,15 +95,16 @@ def plot_comparison(
     titles = ['original data', 'NN prediction', 'NN hard prediction']
 
     # plots
-    fig = plt.figure(figsize=(15, 5))
+    fig = plt.figure(figsize=(13, 5))
     for i in range(3):
         plot_labeled_data(
             x, y_list[i],
             fig, 131 + i,
             titles[i],
-            palette  = 'GnBu_r',
-            hue_norm = (0, 1.5),
-            legend   = False if i!=2 else True
+            palette   = 'GnBu_r',
+            hue_norm  = (0, 1.5),
+            legend    = False if i!=2 else True,
+            show_ylbl = True if i==0 else False
         )
 
     plt.show()
