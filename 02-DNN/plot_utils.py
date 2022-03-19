@@ -70,7 +70,7 @@ def plot_labeled_data(
         lgn_e     = [Line2D([0], [0], marker='o', lw=0, color=cmap(0.)),
                      Line2D([0], [0], marker='o', lw=0, color=cmap(hue_norm[1]**-1))]
         lgn_names = ['0', '1']
-        ax.legend(lgn_e, lgn_names, loc="center left", bbox_to_anchor=(1, 0.5), 
+        lgn = ax.legend(lgn_e, lgn_names, loc="center left", bbox_to_anchor=(1, 0.5), 
                   fontsize=fontsize-4, title="label", title_fontsize=fontsize)
         
     if show_boundaries:
@@ -399,7 +399,7 @@ def plot_confusion_matrix(
             )
 
     ax.set_title(title,      fontsize=fontsize+4)
-    ax.set_xlabel("pred labels", fontsize=fontsize)
+    ax.set_xlabel("predicted labels", fontsize=fontsize)
     ax.set_ylabel("true labels", fontsize=fontsize)
 
     ax.xaxis.set_ticks_position('bottom')
