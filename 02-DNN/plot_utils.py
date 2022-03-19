@@ -25,7 +25,9 @@ def plot_labeled_data(
     palette         = {0:"#0E0F5A", 1:"#80dfff"},
     hue_norm        = (0, 1),
     legend          = True,
-    show_boundaries = False
+    show_boundaries = False,
+    show_ylbl       = False,
+    return_lgn      = False
 ):
     dim = x.shape[1]
     fig.tight_layout()
@@ -34,8 +36,12 @@ def plot_labeled_data(
 
     ax.set_title(title, fontsize=fontsize+4)
     ax.set_xlabel("$x_1$",  fontsize=fontsize)
-    ax.set_ylabel("$x_2$",  fontsize=fontsize)
-    ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
+    if show_lbly:
+        ax.set_ylabel("$x_2$",  fontsize=fontsize)
+        ax.tick_params(axis="both", which="major", labelsize=fontsize, length=5)
+    else:
+        ax.tick_params(axis="x", which="major", labelsize=fontsize, length=5)
+        ax.axes.yaxis.set_ticklabels([])
 
     if dim==3:
         ax.set_zlabel("$x_3$",  fontsize=fontsize)
@@ -58,23 +64,23 @@ def plot_labeled_data(
             ax        = ax
         )
 
-    ax.legend([], [], frameon=False)
+    lgn = ax.legend([], [], frameon=False)
     if legend:
-        if dim==3:
-            cmap      = plt.get_cmap(palette)
-            lgn_e     = [Line2D([0], [0], marker='o', lw=0, color=cmap(0.)),
-                     Line2D([0], [0], marker='o', lw=0, color=cmap(hue_norm[1]**-1))] if dim==3 else []
-            lgn_names = ['0', '1'] if dim==3 else []
-            ax.legend(lgn_e, lgn_names, loc="center left", bbox_to_anchor=(1, 0.5), 
-                      fontsize=fontsize-4, title="label", title_fontsize=fontsize)
-        else:
-            ax.legend(loc="center left", bbox_to_anchor=(1, 0.5), 
-                      fontsize=fontsize-4, title="label", title_fontsize=fontsize)
-
+        cmap      = plt.get_cmap(palette)
+        lgn_e     = [Line2D([0], [0], marker='o', lw=0, color=cmap(0.)),
+                     Line2D([0], [0], marker='o', lw=0, color=cmap(hue_norm[1]**-1))]
+        lgn_names = ['0', '1']
+        ax.legend(lgn_e, lgn_names, loc="center left", bbox_to_anchor=(1, 0.5), 
+                  fontsize=fontsize-4, title="label", title_fontsize=fontsize)
+        
     if show_boundaries:
         boundaries(ax)
 
-    return ax
+    if return_lgn:
+        return ax, lgn
+    else:
+        return ax
+
 
 def plot_comparison(
     x, 
