@@ -98,9 +98,10 @@ def plot_history(
     fontsize      = 14, 
     lw            = 2,
     legend        = True,
+    ncols         = 2,
 ):
 
-    ax1 = fig.add_subplot(121)
+    ax1 = fig.add_subplot(int("1"+str(ncols)+"1"))
 
     ax1.plot(fit.history['accuracy'],     color="tab:blue",   ls="-",  label="train", lw=lw)
     ax1.plot(fit.history['val_accuracy'], color="tab:orange", ls="--", label="valid", lw=lw)
@@ -111,7 +112,7 @@ def plot_history(
     ax1.set_ylim([0, 1])
     ax1.legend(fontsize=fontsize-2)
 
-    ax2 = fig.add_subplot(122)
+    ax2 = fig.add_subplot(int("1"+str(ncols)+"2"))
 
     ax2.plot(fit.history['loss'],     color="tab:blue",   ls="-",  label="train", lw=lw)
     ax2.plot(fit.history['val_loss'], color="tab:orange", ls="--", label="valid", lw=lw)
@@ -124,13 +125,13 @@ def plot_history(
     return (ax1, ax2)
 
 
-def show_confusion_matrix(true, pred, fig, cmap='GnBu', fontsize=14):
+def show_confusion_matrix(true, pred, fig, cmap='GnBu', fontsize=14, subplot_id=111):
 
     LABELS = ["absent","positive","negative"]
 
     matrix = metrics.confusion_matrix(true, pred)
     
-    ax = fig.add_subplot(111)
+    ax = fig.add_subplot(subplot_id)
 
     sns.heatmap(
         matrix,

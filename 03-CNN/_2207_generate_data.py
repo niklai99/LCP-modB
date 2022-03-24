@@ -14,12 +14,13 @@ def pattern(i,z,a):
     return int(a*np.sin((np.pi*i)/z))
 
 def generate_data(
-    A=500,
-    Z=12,
-    N=10000,
-    L=60,
-    DX=50,
-    bias=5
+    A    = 500,
+    Z    = 12,
+    N    = 10000,
+    L    = 60,
+    DX   = 50,
+    bias = 5,
+    verbose = False,
     ):
     # random seed for reproducibility
     np.random.seed(12345)
@@ -52,8 +53,8 @@ def generate_data(
                
     # save file
     str0 = f'ts_L{L}_Z{Z}_A{A}_DX{DX}_bias{bias}_N{N}.dat'
-
-    print(str0)
+    if verbose:
+        print(str0)
 
     fname='DATA/x_'+str0
     np.savetxt(fname,x,fmt="%d")
