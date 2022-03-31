@@ -52,8 +52,8 @@ def plot_weights(
     legend        = True,
 ):
 
-    c = ['r','y','c','b','m']
-    m = ['o','s','D','<','>']
+    c = ['r','y','c','b','m','g','k','orange']
+    m = ['o','s','D','<','>','*','^','v']
 
         
     w = model.layers[layer].get_weights()[0]
